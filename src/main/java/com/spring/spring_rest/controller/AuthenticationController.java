@@ -2,6 +2,8 @@ package com.spring.spring_rest.controller;
 
 import java.beans.BeanProperty;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +26,9 @@ import com.spring.spring_rest.entity.Auth_Role;
 import com.spring.spring_rest.entity.Auth_User;
 import com.spring.spring_rest.repository.AuthRoleRepository;
 import com.spring.spring_rest.repository.AuthUserRepository;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -63,7 +68,7 @@ public class AuthenticationController {
     }
 
 
-    @PostMapping("/register_authorized_user")
+  @PostMapping("/register_authorized_user")
     public ResponseEntity<String> register_authUser(
             @RequestBody AuthUserRegisterDto authUserRegisterDto) {
         if (authUserRepo.existsByUsername(authUserRegisterDto.getUsername())) {
@@ -86,7 +91,7 @@ public class AuthenticationController {
     }
 
 
-    @PostMapping("/auth_login")
+  @PostMapping("/auth_login")
     public ResponseEntity<String> login(@RequestBody AuthLoginDto authLoginDto){
       Authentication authenticate = authenticationManager.authenticate(
         new UsernamePasswordAuthenticationToken(authLoginDto.getUsername(), authLoginDto.getPassword()));
@@ -136,7 +141,23 @@ public class AuthenticationController {
         + ", authRoleRepo=" + authRoleRepo + ", passwordEncoder=" + passwordEncoder + "]";
   }
 
+  @PostMapping("/auth_login_session")
+  public ResponseEntity<?> loginWithSession(@RequestBody AuthLoginDto authLoginDto,
+                                            HttpServletRequest request)  {
+    Authentication authentication = authenticationManager.authenticate(
+      new UsernamePasswordAuthenticationToken(authLoginDto.getUsername(),
+                                              authLoginDto.getPassword())
+    );
+    
+    SecurityContextHolder.getContext().setAuthentication(authentication);
+    HttpSession session = request.getSession(true);
+    session.setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
 
+    Map<String, String> response = new HashMap<>();
+    response.put("message", "Authenticated successfully via session cookie.");
+    return ResponseEntity.ok(response);
+  }
+  
 
     
 }

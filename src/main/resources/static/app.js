@@ -1,4 +1,5 @@
 const API_URL = "http://localhost:8080/api/students";
+const API_AUTH = "http://localhost:8080/api/auth";
 
 //create a student
 async function createStudent(studentData) {
@@ -141,5 +142,25 @@ async function deleteStudent(id) {
     } catch (error) {
       console.error("Error deleting student: ", error);
     }
+  }
+}
+
+async function loginUser(loginDto) {
+  try {
+    const response = await fetch(`${API_AUTH}/auth_login_session`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(loginDto),
+      credentials: "include"
+    });
+    
+    if (response.ok) {
+      alert("Login successful!");
+      window.location.href="index.html";
+    } else {
+      alert("Invalid credentials.");
+    }
+  } catch (error) {
+    console.error("Login error:", error);
   }
 }
