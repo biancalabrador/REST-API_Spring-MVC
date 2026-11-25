@@ -158,6 +158,15 @@ public class AuthenticationController {
     return ResponseEntity.ok(response);
   }
   
-
-    
+  
+  @PostMapping("/logout")
+  public ResponseEntity<String> logout(HttpServletRequest request) {
+      HttpSession session = request.getSession(false);
+      if (session != null) {
+          session.invalidate();
+      }
+      SecurityContextHolder.clearContext();
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+              .body("Logged out from session container.");
+  }
 }
