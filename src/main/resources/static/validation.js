@@ -9,6 +9,8 @@ function validateStudentForm() {
   const lastNameError = document.getElementById("lastNameError");
   const emailError = document.getElementById("emailError");
 
+  clearValidationStyles();
+
   //first name
   if (firstName.value.trim() === "") {
     firstNameError.textContent = "First name is required.";
